@@ -1,19 +1,31 @@
 import 'dart:ui';
 
-import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
-import 'package:mygallery/view/gallery/gallery_view.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mygallery/modules/gallery/view/gallery_view.dart';
+import 'package:mygallery/modules/login/model/userLogIn.dart';
+import 'package:mygallery/modules/login/viewmodel/login.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(login);
+  }
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final log = ref.watch(login);
     return SafeArea(
       child: Scaffold(
         extendBody: false,
@@ -71,7 +83,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 20.ph,
                                 TextFormField(
-                                  keyboardType: TextInputType.name,
+                                  controller: emailController,
+                                  keyboardType: TextInputType.emailAddress,
                                   decoration: const InputDecoration(
                                     filled: true,
                                     fillColor: Colors.white,
@@ -86,6 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 20.ph,
                                 TextFormField(
+                                  controller: passController,
                                   keyboardType: TextInputType.visiblePassword,
                                   obscureText: true,
                                   decoration: const InputDecoration(
@@ -103,16 +117,13 @@ class _LoginPageState extends State<LoginPage> {
                                 20.ph,
                                 ElevatedButton(
                                   onPressed: () {
-                                    Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const GalleryPage(),
-                                        ),
-                                        (route) => false);
+                                    log.logIn(emailController.text,
+                                        passController.text, context);
                                   },
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF7BB3FF),
-                                      textStyle: const TextStyle(color: Colors.white),
+                                      textStyle:
+                                          const TextStyle(color: Colors.white),
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(10))),
